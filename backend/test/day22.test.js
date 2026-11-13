@@ -7,6 +7,8 @@ import {
   quantityBound, validQuantity, validateProduct
 } from '../../frontend/js/product-model.js';
 import { fetchProductById } from '../../frontend/js/product-api.js';
+import { mapProduct } from '../src/products.js';
+import { productRow } from './fixture.js';
 
 const readFrontend = name => readFileSync(new URL(`../../frontend/${name}`, import.meta.url), 'utf8');
 
@@ -14,6 +16,9 @@ test('Day 22: both pages provide one editable quantity input and error message',
   for (const name of ['index-hardcoded.html', 'index-api-product.html']) {
     const html = readFrontend(name);
     assert.match(html, /id="quantityValue"/);
+    assert.match(html, /type="number"/);
+    assert.match(html, /min="1"/);
+    assert.match(html, /step="1"/);
     assert.match(html, /aria-describedby="quantityError"/);
     assert.match(html, /id="quantityError"[^>]*role="alert"/);
     assert.match(html, /id="selectionSubtotal"/);
@@ -21,20 +26,21 @@ test('Day 22: both pages provide one editable quantity input and error message',
   }
 });
 
-test('Day 22: manual quantity rules accept positives and reject invalid values', () => {
+test('Day 22: input validation follows Black stock of five', () => {
   const product = validateProduct(staticProduct);
   const variant = product.variants[0];
   const limit = quantityBound(product, variant);
-  assert.equal(limit, null);
+  assert.equal(limit, 5);
   for (const quantity of [0, -1, 1.5, Number.NaN, Number.POSITIVE_INFINITY]) {
     assert.equal(validQuantity(quantity, limit), false);
   }
   assert.equal(validQuantity(1, limit), true);
-  assert.equal(validQuantity(4, limit), true);
-  assert.equal(formatMoney(4 * product.priceMinor, product.currency), '$3,000.00');
+  assert.equal(validQuantity(5, limit), true);
+  assert.equal(validQuantity(6, limit), false);
+  assert.equal(formatMoney(5 * product.priceMinor, product.currency), '$3,750.00');
 });
 
-test('Day 22: known-stock fixture caps quantity and cumulative cart, original data unchanged', () => {
+test('Day 22: known-stock fixture caps quantity and cumulative cart', () => {
   const fixture = validateProduct(staticProduct);
   fixture.variants[0].stockQuantity = 2;
   fixture.quantityPolicy.maxPerOrder = 3;
@@ -44,7 +50,47 @@ test('Day 22: known-stock fixture caps quantity and cumulative cart, original da
   const cart = addCartLine([], fixture, option, 2, false);
   assert.equal(cartSubtotal(cart, fixture.priceMinor), 150000);
   assert.throws(() => addCartLine(cart, fixture, option, 1, false), error => error.code === 'CART_REJECTED');
-  assert.equal(staticProduct.variants[0].stockQuantity, null);
+  assert.equal(staticProduct.variants[0].stockQuantity, 5);
+});
+
+
+test('Day 22: Black and Silver use their known stock when maxPerOrder is null', () => {
+  const product = validateProduct(staticProduct);
+  const black = product.variants.find(variant => variant.colorCode === 'black');
+  const silver = product.variants.find(variant => variant.colorCode === 'silver');
+
+  assert.equal(product.quantityPolicy.maxPerOrder, null);
+  assert.equal(quantityBound(product, black), 5);
+  assert.equal(quantityBound(product, silver), 10);
+  assert.equal(validQuantity(5, quantityBound(product, black)), true);
+  assert.equal(validQuantity(6, quantityBound(product, black)), false);
+  assert.equal(validQuantity(10, quantityBound(product, silver)), true);
+  assert.equal(validQuantity(11, quantityBound(product, silver)), false);
+});
+
+test('Day 22: backend product mapping preserves demo stock without assuming a max order', () => {
+  const row = productRow();
+  row.max_per_order = null;
+  for (const variant of row.variants) {
+    variant.stockQuantity = variant.colorCode === 'black' ? 5 : 10;
+  }
+  const apiProduct = mapProduct(row);
+  const limits = apiProduct.variants.map(variant => quantityBound(apiProduct, variant));
+  assert.deepEqual(limits, [5, 10]);
+  assert.equal(apiProduct.quantityPolicy.maxPerOrder, null);
+});
+
+test('Day 22: demo SQL seed and OpenAPI example reflect the latest stock values', () => {
+  const seed = readFileSync(new URL('../../database/seed.sql', import.meta.url), 'utf8');
+  const openapi = JSON.parse(readFileSync(new URL('../openapi.json', import.meta.url), 'utf8'));
+  const example = openapi.paths['/api/products/{id}'].get.responses['200']
+    .content['application/json'].example.data;
+
+  assert.match(seed, /75000, 'USD', 1, NULL,/);
+  assert.match(seed, /\('black', 'Black', '45871965307072'::TEXT, true, 0, 5\)/);
+  assert.match(seed, /\('silver', 'Silver', NULL::TEXT, false, 1, 10\)/);
+  assert.equal(example.quantityPolicy.maxPerOrder, null);
+  assert.deepEqual(example.variants.map(variant => variant.stockQuantity), [5, 10]);
 });
 
 test('Day 22: adding items updates cart totals without duplicated product lines', () => {

@@ -30,7 +30,6 @@ export function renderProduct(
     cart: [],
   };
   const cartFeedback = document.querySelector("#cartFeedback");
-  const quantityValue = document.querySelector("#quantityValue");
   const decreaseButton = document.querySelector("#decreaseQty");
   const increaseButton = document.querySelector("#increaseQty");
   const addToCartButton = document.querySelector("#addToCart");
@@ -43,7 +42,8 @@ export function renderProduct(
   const protectionToggle = document.querySelector("#protectionToggle");
   const productContent = document.querySelector("#productContent");
 
-  // Ringkasan pilihan dan subtotal
+  // Mengambil elemen DOM untuk quantity, validasi, dan subtotal
+  const quantityValue = document.querySelector("#quantityValue");
   const quantityError = document.querySelector("#quantityError");
   const selectionSummary = document.querySelector("#selectionSummary");
   const selectionSubtotal = document.querySelector("#selectionSubtotal");
@@ -82,8 +82,7 @@ export function renderProduct(
     });
   }
 
-
-  // Jumlah dari tombol dan input memakai aturan validasi yang sama
+  // Validasi bersama untuk tombol +/- dan input yang diketik pengguna
   function canUseQuantity(quantity) {
     const limit = quantityBound(product, selectedVariant());
     return (
@@ -92,6 +91,7 @@ export function renderProduct(
     );
   }
 
+  // Sinkronkan angka, pesan error, tombol, dan subtotal dari state.
   function updateQuantity() {
     quantityValue.value = String(state.quantity);
     quantityValue.setAttribute("aria-invalid", "false");
@@ -127,20 +127,14 @@ export function renderProduct(
       unknown: "Availability unknown",
     };
     availabilityLabel.textContent = availabilityLabels[variant.availability];
-    let stockText;
+
+    // Menampilkan informasi stok produk
     if (variant.stockQuantity === null) {
-      stockText = "Stock quantity is not known.";
+      stockNote.textContent = "Stock quantity is not known.";
     } else {
-      stockText = `Known stock: ${variant.stockQuantity}.`;
+      stockNote.textContent = `Known stock: ${variant.stockQuantity}.`;
     }
 
-    let limitText;
-    if (limit === null) {
-      limitText = "Maximum order quantity is not known.";
-    } else {
-      limitText = `Known quantity limit: ${limit}.`;
-    }
-    stockNote.textContent = `${stockText} ${limitText}`;
     addToCartButton.textContent = variant.purchasable
       ? "ADD TO CART"
       : "UNAVAILABLE";
@@ -247,47 +241,43 @@ export function renderProduct(
     { signal },
   );
 
-  // Validasi jumlah yang diketik pengguna
-  quantityValue.addEventListener(
-    "input",
-    () => {
-      const inputText = quantityValue.value.trim();
-      const inputQuantity = Number(inputText);
-      const limit = quantityBound(product, selectedVariant());
-      const validText = inputText !== "" && inputText === String(inputQuantity);
+  // Membaca dan memeriksa jumlah yang diketik pengguna.
+  function handleQuantityInput() {
+    const jumlah = Number(quantityValue.value);
+    let pesanError = "";
 
-      if (!validText || !canUseQuantity(inputQuantity)) {
-        let message = "Enter a whole number greater than zero.";
-        if (inputText === "") {
-          message = "Enter a quantity.";
-        } else if (
-          Number.isSafeInteger(inputQuantity) &&
-          inputQuantity >= 1 &&
-          limit !== null &&
-          inputQuantity > limit
-        ) {
-          message = `Maximum quantity is ${limit}.`;
-        } else if (
-          Number.isSafeInteger(inputQuantity) &&
-          inputQuantity >= 1 &&
-          !Number.isSafeInteger(inputQuantity * product.priceMinor)
-        ) {
-          message = "Quantity is too large.";
-        }
+    // Tentukan pesan sesuai kesalahan input.
+    if (quantityValue.value === "") {
+      pesanError = "Enter a quantity.";
+    } else if (!Number.isSafeInteger(jumlah) || jumlah < 1) {
+      pesanError = "Enter a whole number greater than zero.";
+    } else if (!canUseQuantity(jumlah)) {
+      const batas = quantityBound(product, selectedVariant());
 
-        quantityValue.setAttribute("aria-invalid", "true");
-        quantityError.textContent = message;
-        quantityError.hidden = false;
-        selectionSubtotal.textContent = "—";
-        addToCartButton.disabled = true;
-        return;
+      if (batas !== null && jumlah > batas) {
+        pesanError = `Maximum quantity is ${batas}.`;
+      } else {
+        pesanError = "Enter a valid quantity.";
       }
+    }
 
-      state.quantity = inputQuantity;
-      updateQuantity();
-    },
-    { signal },
-  );
+    // Jika tidak valid: tampilkan pesan, nonaktifkan keranjang, lalu berhenti.
+    if (pesanError !== "") {
+      quantityValue.setAttribute("aria-invalid", "true");
+      quantityError.textContent = pesanError;
+      quantityError.hidden = false;
+      selectionSubtotal.textContent = "—";
+      addToCartButton.disabled = true;
+      return;
+    }
+
+    // Jika valid: simpan jumlah ke state dan perbarui tampilan.
+    state.quantity = jumlah;
+    updateQuantity();
+  }
+
+  // Event 'input' berjalan saat pengguna mengubah angka secara langsung.
+  quantityValue.addEventListener("input", handleQuantityInput, { signal });
 
   protectionToggle.addEventListener(
     "change",

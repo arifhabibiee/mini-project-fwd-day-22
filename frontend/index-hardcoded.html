@@ -196,8 +196,9 @@
                 <!-- Input jumlah produk -->
                 <input
                   id="quantityValue"
-                  type="text"
-                  inputmode="numeric"
+                  type="number"
+                  min="1"
+                  step="1"
                   value="1"
                   aria-label="Quantity"
                   aria-describedby="quantityError"
@@ -217,7 +218,12 @@
             </div>
 
             <!-- Pesan saat jumlah tidak valid -->
-            <p id="quantityError" class="quantity-error" role="alert" hidden></p>
+            <p
+              id="quantityError"
+              class="quantity-error"
+              role="alert"
+              hidden
+            ></p>
 
             <!-- Ringkasan pilihan produk dan subtotal -->
             <div class="selection-summary" aria-live="polite">

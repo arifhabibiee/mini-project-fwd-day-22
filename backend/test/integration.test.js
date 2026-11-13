@@ -55,7 +55,7 @@ test('real PostgreSQL: readiness, actual generated ID and full product response 
     for (const variant of data.variants) {
       assert.equal(variant.availability, 'available');
       assert.equal(variant.purchasable, true);
-      assert.equal(variant.stockQuantity, null);
+      assert.equal(variant.stockQuantity, variant.colorCode === 'black' ? 5 : 10);
       assert.deepEqual(variant.images.map(image => image.position), [0, 1, 2, 3]);
     }
     assert.equal(data.content.features.length, 6);

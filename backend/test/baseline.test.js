@@ -30,13 +30,14 @@ test('two complete semantic HTML documents share consistent structure', () => {
   assert.doesNotMatch(source('product-api.js'), /product-data|staticProduct/);
 });
 
-test('hardcoded dataset keeps baseline content and unknown stock', () => {
+test('hardcoded dataset keeps baseline content with demo stock 5/10 and unknown max order', () => {
   const product = validateProduct(staticProduct);
   assert.equal(product.name, 'MW75 TUMI');
   assert.equal(product.priceMinor, 75000);
   assert.deepEqual(product.variants.map(v => v.colorCode), ['black', 'silver']);
   assert.equal(product.variants.reduce((sum, v) => sum + v.images.length, 0), 8);
-  assert.deepEqual(product.variants.map(v => v.stockQuantity), [null, null]);
+  assert.deepEqual(product.variants.map(v => v.stockQuantity), [5, 10]);
+  assert.equal(product.quantityPolicy.maxPerOrder, null);
   assert.equal(product.content.features.length, 6);
   assert.equal(product.content.benefits.length, 3);
   assert.equal(product.content.stories.length, 2);
@@ -44,13 +45,14 @@ test('hardcoded dataset keeps baseline content and unknown stock', () => {
   assert.equal(product.content.boxItems.length, 7);
 });
 
-test('baseline quantity/cart math keeps stock unknown rather than fabricated', () => {
+test('hardcoded quantity/cart math respects Black stock of five', () => {
   const product = validateProduct(staticProduct);
   const variant = product.variants[0];
-  assert.equal(quantityBound(product, variant), null);
-  assert.equal(validQuantity(2, null), true);
-  assert.equal(validQuantity(0, null), false);
-  assert.equal(validQuantity(1.5, null), false);
+  assert.equal(quantityBound(product, variant), 5);
+  assert.equal(validQuantity(2, 5), true);
+  assert.equal(validQuantity(0, 5), false);
+  assert.equal(validQuantity(1.5, 5), false);
+  assert.equal(validQuantity(6, 5), false);
   const cart = addCartLine([], product, variant, 2, false);
   assert.equal(cartSubtotal(cart, product.priceMinor), 150000);
   assert.equal(formatMoney(150000, 'USD'), '$1,500.00');

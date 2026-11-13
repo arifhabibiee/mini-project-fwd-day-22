@@ -1651,3 +1651,15 @@ img {
   background-color: #fff4f2;
   box-shadow: inset 0 -2px 0 #b42318;
 }
+
+/* Menyembunyikan panah bawaan input number */
+#quantityValue::-webkit-inner-spin-button,
+#quantityValue::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+#quantityValue {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}

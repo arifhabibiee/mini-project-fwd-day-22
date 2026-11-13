@@ -33,7 +33,8 @@ test('real PostgreSQL -> Express API -> frontend product mapping', async t => {
     }
     assert.deepEqual(product.variants.map(variant => variant.colorCode),
       local.variants.map(variant => variant.colorCode));
-    assert.deepEqual(product.variants.map(variant => variant.stockQuantity), [null, null]);
+    assert.deepEqual(product.variants.map(variant => variant.stockQuantity), [5, 10]);
+    assert.equal(product.quantityPolicy.maxPerOrder, null);
     assert.equal(product.variants.reduce((sum, variant) => sum + variant.images.length, 0), 8);
     t.diagnostic(`Read-only API integration verified for product ID ${id}`);
   } catch (error) {
