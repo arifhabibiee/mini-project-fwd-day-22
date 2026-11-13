@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="MW75 TUMI product details, gallery, specifications and features."
+    />
+    <title>MW75 TUMI | Product Details</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="./favicon.ico" sizes="32x32" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" sizes="any" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <div class="announcement">
+      Free US Ground shipping on orders of $99 or more.
+    </div>
+
+    <header class="site-header" id="siteHeader">
+      <div class="header-inner">
+        <button
+          class="icon-button menu-button"
+          id="menuButton"
+          type="button"
+          aria-label="Open navigation menu"
+          aria-controls="navDrawer"
+          aria-expanded="false"
+        >
+          <span></span><span></span><span></span>
+        </button>
+        <a class="brand" href="" aria-label="MW75 TUMI product details"
+          >MASTER &amp; DYNAMIC</a
+        >
+        <nav class="desktop-nav" aria-label="Primary navigation">
+          <a href="https://www.masterdynamic.com/collections/headphones"
+            >Headphones</a
+          >
+          <a href="https://www.masterdynamic.com/collections/earphones"
+            >Earphones</a
+          >
+          <a href="https://www.masterdynamic.com/collections/accessories"
+            >Accessories</a
+          >
+          <a href="https://www.masterdynamic.com/pages/collaborations"
+            >Collaborations</a
+          >
+          <a href="https://www.masterdynamic.com/blogs/master-dynamic">Blog</a>
+        </nav>
+        <div class="header-actions">
+          <button
+            class="text-action country-button"
+            id="countryButton"
+            type="button"
+            aria-haspopup="dialog"
+            aria-controls="countryModal"
+            aria-expanded="false"
+          >
+            US
+          </button>
+          <button
+            class="icon-button"
+            id="searchButton"
+            type="button"
+            aria-label="Open search"
+            aria-haspopup="dialog"
+            aria-controls="searchModal"
+            aria-expanded="false"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="11" cy="11" r="6"></circle>
+              <path d="m16 16 4 4"></path>
+            </svg>
+          </button>
+          <a
+            class="icon-button account-link"
+            href="https://www.masterdynamic.com/account"
+            aria-label="Open account page"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="8" r="4"></circle>
+              <path d="M4 21c1-5 4-7 8-7s7 2 8 7"></path>
+            </svg>
+          </a>
+          <button
+            class="icon-button cart-button"
+            id="cartButton"
+            type="button"
+            aria-label="Open cart"
+            aria-controls="cartDrawer"
+            aria-expanded="false"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 7h16l-1 13H5L4 7Z"></path>
+              <path d="M8 7a4 4 0 0 1 8 0"></path>
+            </svg>
+            <span class="cart-count" id="cartCount" aria-live="polite">0</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" aria-busy="true" tabindex="-1">
+      <section id="loadPanel" class="load-panel" aria-labelledby="loadHeading">
+        <h1 id="loadHeading">Loading product</h1>
+        <p id="loadMessage" role="status" aria-live="polite">
+          Please wait while product information loads.
+        </p>
+        <button id="retryButton" type="button" hidden>Retry</button>
+        <button class="add-to-cart loading-purchase" disabled>
+          ADD TO CART
+        </button>
+      </section>
+      <div id="productContent" hidden>
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <a href="https://www.masterdynamic.com/collections/all-products"
+            >All Products</a
+          >
+          <span aria-hidden="true">/</span>
+          <span id="breadcrumbProduct"></span>
+        </nav>
+
+        <article class="product-shell" aria-labelledby="productTitle">
+          <section class="gallery-panel" aria-label="Product gallery">
+            <div class="gallery-stage">
+              <div id="galleryImageSlot"></div>
+              <button
+                class="gallery-arrow gallery-prev"
+                id="prevImage"
+                type="button"
+                aria-label="Previous product image"
+              >
+                ←
+              </button>
+              <button
+                class="gallery-arrow gallery-next"
+                id="nextImage"
+                type="button"
+                aria-label="Next product image"
+              >
+                →
+              </button>
+              <div
+                class="gallery-index"
+                id="galleryIndex"
+                aria-live="polite"
+              ></div>
+            </div>
+            <div
+              class="thumbnail-row"
+              id="thumbnailRow"
+              role="group"
+              aria-label="Product gallery thumbnails"
+            ></div>
+          </section>
+
+          <section class="product-info" aria-labelledby="productTitle">
+            <p class="eyebrow" id="productEyebrow"></p>
+            <h1 id="productTitle"></h1>
+            <p class="product-subtitle" id="productSubtitle"></p>
+            <p class="price" id="productPrice"></p>
+            <p class="availability" id="availability" aria-live="polite"></p>
+            <p class="stock-note" id="stockNote"></p>
+
+            <div class="divider"></div>
+
+            <fieldset class="variant-fieldset">
+              <legend>Color <span id="selectedColorLabel"></span></legend>
+              <div
+                class="swatches"
+                id="swatches"
+                role="radiogroup"
+                aria-label="Color"
+              ></div>
+            </fieldset>
+
+            <div class="purchase-row">
+              <div
+                class="quantity-control"
+                role="group"
+                aria-label="Quantity selector"
+              >
+                <button
+                  id="decreaseQty"
+                  type="button"
+                  aria-label="Decrease quantity"
+                >
+                  −
+                </button>
+
+                <!-- Input jumlah produk -->
+                <input
+                  id="quantityValue"
+                  type="text"
+                  inputmode="numeric"
+                  value="1"
+                  aria-label="Quantity"
+                  aria-describedby="quantityError"
+                />
+
+                <button
+                  id="increaseQty"
+                  type="button"
+                  aria-label="Increase quantity"
+                >
+                  +
+                </button>
+              </div>
+              <button class="add-to-cart" id="addToCart" type="button" disabled>
+                ADD TO CART
+              </button>
+            </div>
+
+            <!-- Pesan saat jumlah tidak valid -->
+            <p id="quantityError" class="quantity-error" role="alert" hidden></p>
+
+            <!-- Ringkasan pilihan produk dan subtotal -->
+            <div class="selection-summary" aria-live="polite">
+              <span id="selectionSummary">Selection summary</span>
+              <strong id="selectionSubtotal">—</strong>
+            </div>
+
+            <p
+              class="cart-feedback"
+              id="cartFeedback"
+              role="status"
+              aria-live="polite"
+            ></p>
+
+            <label class="protection-card">
+              <input type="checkbox" id="protectionToggle" />
+              <span class="protection-copy">
+                <strong id="protectionTitle"></strong>
+                <small id="protectionNote"></small>
+              </span>
+              <span class="check-ui" aria-hidden="true"></span>
+            </label>
+
+            <details class="product-description">
+              <summary>Product description</summary>
+              <p id="productDescription"></p>
+            </details>
+            <p class="cart-note">
+              Cart is for this page only. Checkout is not available.
+            </p>
+          </section>
+        </article>
+      </div>
+      <noscript
+        ><p class="load-panel">
+          JavaScript is required for product interactions and loading product
+          information.
+        </p></noscript
+      >
+    </main>
+
+    <footer class="site-footer">
+      <section class="newsletter">
+        <h2>Sign up for early access, news and exclusive offers</h2>
+        <form id="newsletterForm" novalidate>
+          <label class="sr-only" for="emailInput">Email address</label>
+          <input
+            id="emailInput"
+            type="email"
+            placeholder="EMAIL ADDRESS"
+            autocomplete="email"
+            required
+          />
+          <button type="submit">JOIN</button>
+        </form>
+        <p
+          id="newsletterMessage"
+          class="newsletter-message"
+          role="status"
+          aria-live="polite"
+        ></p>
+      </section>
+      <div class="footer-links">
+        <div>
+          <h3>Help &amp; Info</h3>
+          <a href="https://www.masterdynamic.com/pages/compare"
+            >Product Comparisons</a
+          ><a href="https://support.masterdynamic.com/">Product Support</a
+          ><a href="https://support.masterdynamic.com/">Shopping Info</a>
+        </div>
+        <div>
+          <h3>About</h3>
+          <a href="https://www.masterdynamic.com/pages/about-us">About Us</a
+          ><a href="https://www.masterdynamic.com/blogs/master-dynamic">News</a
+          ><a href="https://www.masterdynamic.com/pages/contact">Contact Us</a>
+        </div>
+        <div>
+          <h3>Gifting</h3>
+          <a href="https://www.masterdynamic.com/pages/contact"
+            >Corporate Gifting</a
+          ><a href="https://www.masterdynamic.com/products/gift-card"
+            >Digital Gift Card</a
+          >
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>
+          Brand reference address: 1178 Broadway, 3rd Floor, Suite 1205 New
+          York, NY, 10001. Not an address for this website.
+        </p>
+        <p>
+          Independent concept website. Not affiliated with Master &amp; Dynamic
+          or TUMI. No purchases are processed.
+        </p>
+        <div class="legal-links">
+          <a href="https://www.masterdynamic.com/pages/privacy">Privacy</a
+          ><a href="https://www.masterdynamic.com/pages/terms">Terms</a
+          ><a href="https://www.masterdynamic.com/pages/accessibility"
+            >Accessibility</a
+          >
+        </div>
+      </div>
+    </footer>
+
+    <div class="overlay" id="overlay" hidden></div>
+
+    <aside
+      class="drawer nav-drawer"
+      id="navDrawer"
+      aria-hidden="true"
+      aria-label="Navigation menu"
+    >
+      <div class="drawer-header">
+        <strong>MENU</strong
+        ><button
+          class="drawer-close"
+          type="button"
+          data-close
+          aria-label="Close menu"
+        >
+          ×
+        </button>
+      </div>
+      <nav>
+        <a href="https://www.masterdynamic.com/collections/headphones"
+          >Headphones</a
+        >
+        <a href="https://www.masterdynamic.com/collections/earphones"
+          >Earphones</a
+        >
+        <a href="https://www.masterdynamic.com/collections/accessories"
+          >Accessories</a
+        >
+        <a href="https://www.masterdynamic.com/pages/collaborations"
+          >Collaborations</a
+        >
+        <a href="https://www.masterdynamic.com/blogs/master-dynamic">Blog</a>
+        <a href="https://support.masterdynamic.com/">Support</a>
+      </nav>
+    </aside>
+
+    <aside
+      class="drawer cart-drawer"
+      id="cartDrawer"
+      aria-hidden="true"
+      aria-label="Shopping cart"
+    >
+      <div class="drawer-header">
+        <strong>YOUR CART</strong
+        ><button
+          class="drawer-close"
+          type="button"
+          data-close
+          aria-label="Close cart"
+        >
+          ×
+        </button>
+      </div>
+      <div id="cartContents" class="cart-contents">
+        <p>Your cart is empty.</p>
+      </div>
+    </aside>
+
+    <div
+      class="modal search-modal"
+      id="searchModal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="searchHeading"
+      hidden
+    >
+      <div class="modal-inner">
+        <div class="modal-header">
+          <h2 id="searchHeading">Search</h2>
+          <button
+            class="drawer-close"
+            type="button"
+            data-close
+            aria-label="Close search"
+          >
+            ×
+          </button>
+        </div>
+        <div class="search-field">
+          <label class="sr-only" for="searchInput">Search products</label
+          ><input
+            id="searchInput"
+            type="search"
+            placeholder="Search products"
+          /><button id="clearSearch" type="button">Clear</button>
+        </div>
+        <div class="suggestions">
+          <p class="eyebrow">SUGGESTED</p>
+          <a
+            href="https://www.masterdynamic.com/products/mh40-wireless-over-ear-headphones"
+            >MH40 Wireless</a
+          >
+          <a
+            href="https://www.masterdynamic.com/products/mw75-active-noise-cancelling-wireless-headphones"
+            >MW75</a
+          >
+          <a
+            href="https://www.masterdynamic.com/products/mw09-active-noise-cancelling-true-wireless-earphones"
+            >MW09</a
+          >
+          <hr />
+          <strong>Need Product Support?</strong>
+          <a href="https://support.masterdynamic.com/">Support Center</a>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="modal country-modal"
+      id="countryModal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="countryHeading"
+      hidden
+    >
+      <div class="modal-inner compact-modal">
+        <div class="modal-header">
+          <h2 id="countryHeading">Country</h2>
+          <button
+            class="drawer-close"
+            type="button"
+            data-close
+            aria-label="Close country selector"
+          >
+            ×
+          </button>
+        </div>
+        <div class="country-list" id="countryList">
+          <button class="country-option active" data-code="US">
+            United States <span>USD $</span>
+          </button>
+          <button type="button" class="country-option" data-code="GB">
+            United Kingdom <span>GBP £</span>
+          </button>
+          <button type="button" class="country-option" data-code="FR">
+            France <span>EUR €</span>
+          </button>
+          <button type="button" class="country-option" data-code="DE">
+            Germany <span>EUR €</span>
+          </button>
+          <button type="button" class="country-option" data-code="IT">
+            Italy <span>EUR €</span>
+          </button>
+          <button type="button" class="country-option" data-code="ES">
+            Spain <span>EUR €</span>
+          </button>
+          <button type="button" class="country-option" data-code="SE">
+            Sweden <span>EUR €</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="./js/api-page.js"></script>
+  </body>
+</html>

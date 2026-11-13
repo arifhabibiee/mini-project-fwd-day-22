@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800">
+<defs><linearGradient id="m" x1="0" x2="1"><stop stop-color="#b5b5b5"/><stop offset=".5" stop-color="#f6f6f6"/><stop offset="1" stop-color="#8b8b8b"/></linearGradient></defs>
+<rect width="800" height="800" fill="#efefed"/>
+<g fill="none" stroke="#a7a7a7" stroke-width="34" stroke-linecap="round">
+  <path d="M250 365c0-150 62-240 150-240s150 90 150 240"/>
+  <rect x="170" y="340" width="180" height="300" rx="82" fill="url(#m)"/>
+  <rect x="450" y="340" width="180" height="300" rx="82" fill="url(#m)"/>
+</g>
+<circle cx="260" cy="490" r="76" fill="#d7d7d7" stroke="#777" stroke-width="10"/>
+<circle cx="540" cy="490" r="76" fill="#d7d7d7" stroke="#777" stroke-width="10"/>
+<path d="M215 455l90 70M215 490l80 60M495 455l90 70M505 490l80 60" stroke="#a0a0a0" stroke-width="8"/>
+<text x="400" y="720" font-family="Arial" font-size="26" text-anchor="middle" fill="#555" letter-spacing="4">MW75 TUMI • SILVER</text>
+</svg>

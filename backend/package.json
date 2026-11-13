@@ -1,0 +1,26 @@
+{
+  "name": "mw75-tumi-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Read-only API for an independent MW75 TUMI product application",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "check": "node --check src/server.js && node --check src/app.js && node --check src/config.js && node --check src/db.js && node --check src/products.js && node --check src/errors.js && node --check ../frontend/js/hardcoded-page.js && node --check ../frontend/js/api-page.js && node --check ../frontend/js/product-data.js && node --check ../frontend/js/product-model.js && node --check ../frontend/js/product-ui.js && node --check ../frontend/js/product-api.js && node --check ../frontend/js/product-gallery.js && node --check ../frontend/js/product-editorial.js && node --check ../frontend/js/product-cart.js && node --check ../frontend/js/site-ui.js",
+    "test": "node --test test/baseline.test.js test/day22.test.js test/unit.test.js test/openapi.test.js",
+    "test:integration": "node --test test/integration.test.js test/page-integration.test.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.3.0",
+    "pg": "^8.23.1",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "@apidevtools/swagger-parser": "^13.1.0"
+  }
+}

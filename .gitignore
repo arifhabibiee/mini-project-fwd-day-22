@@ -1,0 +1,41 @@
+# Private environment files; keep the documented example tracked.
+.env
+.env.*
+!.env.example
+
+# Dependency installations; package lockfiles remain tracked.
+node_modules/
+
+# Logs and generated verification/build artifacts.
+/_ARSIP_HAPUS_SEBELUM_GITHUB/
+*.log
+logs/
+coverage/
+dist/
+.nyc_output/
+.cache/
+ZIP/
+*.zip
+backups/
+dumps/
+
+# Private keys, certificates and local credential files.
+secrets/
+.secrets/
+*.pem
+*.key
+*.p12
+*.pfx
+.npmrc
+
+# Local scratch files and editor/OS artifacts.
+tmp/
+temp/
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+Desktop.ini

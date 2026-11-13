@@ -1,0 +1,1301 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "MW75 TUMI Independent Product API",
+    "version": "1.0.0",
+    "description": "Read-only API for an independent product-detail application, not operated by or affiliated with Master & Dynamic or TUMI. Availability is demonstration configuration, not verified commercial inventory. Actual dataset-specific mapping/validation; no checkout, CRUD mutations, authentication, listing or slug lookup."
+  },
+  "servers": [
+    {
+      "url": "/",
+      "description": "Same origin as Swagger UI; no private configuration."
+    }
+  ],
+  "tags": [
+    {
+      "name": "Health",
+      "description": "Application/database read readiness."
+    },
+    {
+      "name": "Products",
+      "description": "Product, variants, gallery and editorial."
+    }
+  ],
+  "paths": {
+    "/api/health": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "operationId": "getHealth",
+        "summary": "Application/database readiness",
+        "description": "Checks connectivity and SELECT access to all three product tables. Ready does not guarantee record count or validity of every product. No credentials, host, SQL or stack trace exposed.",
+        "responses": {
+          "200": {
+            "description": "Application and database ready.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthSuccess"
+                },
+                "example": {
+                  "data": {
+                    "status": "ok",
+                    "application": "ready",
+                    "database": "ready"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Origin outside the loopback development allowlist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "ORIGIN_NOT_ALLOWED",
+                    "message": "Origin tidak diizinkan."
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Unsupported method for this resource.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "METHOD_NOT_ALLOWED",
+                    "message": "Method tidak diizinkan."
+                  }
+                }
+              }
+            },
+            "headers": {
+              "Allow": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "GET, HEAD, OPTIONS"
+              }
+            }
+          },
+          "503": {
+            "description": "Database connection/query/table access failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthUnavailable"
+                },
+                "example": {
+                  "data": {
+                    "status": "degraded",
+                    "application": "ready",
+                    "database": "unavailable"
+                  },
+                  "error": {
+                    "code": "DATABASE_UNAVAILABLE",
+                    "message": "Database sementara tidak tersedia."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/products/{id}": {
+      "get": {
+        "tags": [
+          "Products"
+        ],
+        "operationId": "getProductById",
+        "summary": "Product detail by generated ID",
+        "description": "Parameterized SELECT in one snapshot with variants/images ordered by position. ID 1 is the current dataset example, not an API default. Canonical positive decimal only: no leading zero, signs, whitespace, fractions, scientific notation or overflow. Color/variant selection is frontend state, not an API query parameter. Unavailable/unknown variants still return 200. Server validates default references, uniqueness and stock/purchasable consistency. HEAD follows GET, OPTIONS supports preflight; Swagger Try it out uses GET only.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Canonical decimal matching ^[1-9][0-9]*$, in positive PostgreSQL INTEGER range. 01 is invalid.",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Found product with validated variant, image and editorial payload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductResponse"
+                },
+                "example": {
+                  "data": {
+                    "id": 1,
+                    "slug": "mw75-tumi",
+                    "name": "MW75 TUMI",
+                    "subtitle": "Noise-Cancelling Wireless Headphones",
+                    "description": "MW75 combines 40mm beryllium drivers with Adaptive Active Noise Cancellation to deliver detailed sound while giving the listener flexible control over outside noise.\n\nIts lightweight anodized aluminum construction and soft lambskin leather are designed for extended listening in a distinctive over-ear form.",
+                    "priceMinor": 75000,
+                    "currency": "USD",
+                    "defaultVariantId": 1,
+                    "quantityPolicy": {
+                      "min": 1,
+                      "maxPerOrder": null
+                    },
+                    "variants": [
+                      {
+                        "id": 1,
+                        "colorCode": "black",
+                        "label": "Black",
+                        "referenceVariantId": "45871965307072",
+                        "availability": "available",
+                        "stockQuantity": null,
+                        "isDefault": true,
+                        "position": 0,
+                        "purchasable": true,
+                        "images": [
+                          {
+                            "id": 1,
+                            "url": "https://www.masterdynamic.com/cdn/shop/files/MW75B_TUMI_800x800_Hero.png?v=1769444695&width=800",
+                            "alt": "Black MW75 TUMI wireless headphones, view 1",
+                            "position": 0,
+                            "fallbackUrl": "/assets/mw75-black-fallback.svg"
+                          },
+                          {
+                            "id": 2,
+                            "url": "https://www.masterdynamic.com/cdn/shop/files/MW75B_TUMI_800x800_Front.png?v=1769444695&width=800",
+                            "alt": "Black MW75 TUMI wireless headphones, view 2",
+                            "position": 1,
+                            "fallbackUrl": "/assets/mw75-black-fallback.svg"
+                          },
+                          {
+                            "id": 3,
+                            "url": "https://www.masterdynamic.com/cdn/shop/files/MW75B_TUMI_800x800_Engraving.png?v=1769444695&width=800",
+                            "alt": "Black MW75 TUMI wireless headphones, view 3",
+                            "position": 2,
+                            "fallbackUrl": "/assets/mw75-black-fallback.svg"
+                          },
+                          {
+                            "id": 4,
+                            "url": "https://www.masterdynamic.com/cdn/shop/files/MW75B_TUMI_800x800_Straight_8b6fd9c0-e214-42cd-b617-eac997922263.png?v=1769444695&width=800",
+                            "alt": "Black MW75 TUMI wireless headphones, view 4",
+                            "position": 3,
+                            "fallbackUrl": "/assets/mw75-black-fallback.svg"
+                          }
+                        ]
+                      },
+                      {
+                        "id": 2,
+                        "colorCode": "silver",
+                        "label": "Silver",
+                        "referenceVariantId": null,
+                        "availability": "available",
+                        "stockQuantity": null,
+                        "isDefault": false,
+                        "position": 1,
+                        "purchasable": true,
+                        "images": [
+                          {
+                            "id": 5,
+                            "url": "https://www.masterdynamic.com/cdn/shop/files/MW75S_TUMI_800x800_Hero.png?v=1769444695&width=800",
+                            "alt": "Silver MW75 TUMI wireless headphones, view 1",
+                            "position": 0,
+                            "fallbackUrl": "/assets/mw75-silver-fallback.svg"
+                          },
+                          {
+                            "id": 6,
+                            "url": "https://www.masterdynamic.com/cdn/shop/files/MW75S_TUMI_800x800_Front.png?v=1769444695&width=800",
+                            "alt": "Silver MW75 TUMI wireless headphones, view 2",
+                            "position": 1,
+                            "fallbackUrl": "/assets/mw75-silver-fallback.svg"
+                          },
+                          {
+                            "id": 7,
+                            "url": "https://www.masterdynamic.com/cdn/shop/files/MW75S_TUMI_800x800_Engraving.png?v=1769444695&width=800",
+                            "alt": "Silver MW75 TUMI wireless headphones, view 3",
+                            "position": 2,
+                            "fallbackUrl": "/assets/mw75-silver-fallback.svg"
+                          },
+                          {
+                            "id": 8,
+                            "url": "https://www.masterdynamic.com/cdn/shop/files/MW75S_TUMI_800x800_Straight_f01c8c31-58db-4162-a823-25764eae06d7.png?v=1769444571&width=800",
+                            "alt": "Silver MW75 TUMI wireless headphones, view 4",
+                            "position": 3,
+                            "fallbackUrl": "/assets/mw75-silver-fallback.svg"
+                          }
+                        ]
+                      }
+                    ],
+                    "content": {
+                      "eyebrow": "MASTER & DYNAMIC FOR TUMI",
+                      "features": [
+                        {
+                          "title": "Adaptive",
+                          "text": "ANC",
+                          "iconKey": "anc"
+                        },
+                        {
+                          "title": "Anodized aluminum,",
+                          "text": "tempered glass & lambskin leather",
+                          "iconKey": "materials"
+                        },
+                        {
+                          "title": "40mm",
+                          "text": "beryllium drivers",
+                          "iconKey": "drivers"
+                        },
+                        {
+                          "title": "32",
+                          "text": "hours of listening",
+                          "iconKey": "battery"
+                        },
+                        {
+                          "title": "Bluetooth®",
+                          "text": "5.1",
+                          "iconKey": "bluetooth"
+                        },
+                        {
+                          "title": "4",
+                          "text": "beamforming microphones",
+                          "iconKey": "microphones"
+                        }
+                      ],
+                      "benefits": [
+                        {
+                          "title": "Free Shipping",
+                          "text": "Free ground shipping on orders of $99 or more in the U.S."
+                        },
+                        {
+                          "title": "Free Returns",
+                          "text": "We offer a 14-day return policy, allowing you to shop with confidence."
+                        },
+                        {
+                          "title": "Product Protection",
+                          "text": "Manufacturer warranty for manufacturing defects or issues."
+                        }
+                      ],
+                      "protection": {
+                        "title": "Enhance your purchase with protection",
+                        "note": "Optional product protection entry point"
+                      },
+                      "stories": [
+                        {
+                          "eyebrow": "MASTER & DYNAMIC FOR",
+                          "title": "TUMI",
+                          "paragraphs": [
+                            "A premium audio collaboration with TUMI that brings the brand’s recognizable 19 Degree design language to travel-ready noise-cancelling sound tools, combining precise engineering with a refined visual identity."
+                          ],
+                          "media": {
+                            "url": "https://www.masterdynamic.com/cdn/shop/files/TUMI_PDPBrandFeatureImage_V1.png?v=1753814090&width=1200",
+                            "alt": "Master & Dynamic for TUMI collaboration visual",
+                            "fallbackUrl": "/assets/story-fallback.svg"
+                          },
+                          "links": []
+                        },
+                        {
+                          "eyebrow": "MW75",
+                          "title": "Active Noise-Cancelling Wireless Headphones",
+                          "paragraphs": [
+                            "MW75 combines 40mm beryllium drivers with Adaptive Active Noise Cancellation to deliver detailed sound while giving the listener flexible control over outside noise.",
+                            "Its lightweight anodized aluminum construction and soft lambskin leather are designed for extended listening in a distinctive over-ear form."
+                          ],
+                          "media": {
+                            "url": "https://www.masterdynamic.com/cdn/shop/files/MW75B_TUMI-PDPFeatureImage_V1.png?v=1753812946&width=1200",
+                            "alt": "MW75 TUMI product lifestyle visual",
+                            "fallbackUrl": "/assets/story-fallback-light.svg"
+                          },
+                          "links": [
+                            {
+                              "label": "Learn more about MW75",
+                              "url": "https://www.masterdynamic.com/products/mw75-active-noise-cancelling-wireless-headphones"
+                            },
+                            {
+                              "label": "Discover the full TUMI collaboration",
+                              "url": "https://www.masterdynamic.com/pages/tumi-collaboration"
+                            }
+                          ]
+                        }
+                      ],
+                      "specGroups": [
+                        {
+                          "title": "Materials and Design",
+                          "rows": [
+                            {
+                              "label": "Materials",
+                              "value": "Lambskin leather headband and ear pads / anodized aluminum controls"
+                            },
+                            {
+                              "label": "Dimensions",
+                              "value": "160.75mm × 197.83mm × 83.57mm"
+                            },
+                            {
+                              "label": "Weight",
+                              "value": "338g"
+                            },
+                            {
+                              "label": "Ear Coupling",
+                              "value": "Over-Ear"
+                            },
+                            {
+                              "label": "Ear Pads",
+                              "value": "Replaceable magnetic lambskin-wrapped memory foam"
+                            }
+                          ]
+                        },
+                        {
+                          "title": "Sound and Features",
+                          "rows": [
+                            {
+                              "label": "Drivers",
+                              "value": "40mm beryllium"
+                            },
+                            {
+                              "label": "Impedance",
+                              "value": "32 Ohms"
+                            },
+                            {
+                              "label": "Talk Microphones",
+                              "value": "4 Microphone talk solution with wind protection"
+                            },
+                            {
+                              "label": "ANC Microphones",
+                              "value": "4 Microphone ANC solution"
+                            },
+                            {
+                              "label": "Voice Assistant",
+                              "value": "Compatible with native voice assistants"
+                            }
+                          ]
+                        },
+                        {
+                          "title": "Connectivity and Charging",
+                          "rows": [
+                            {
+                              "label": "Battery Life",
+                              "value": "Up to 32 hours, or up to 28 hours with ANC enabled"
+                            },
+                            {
+                              "label": "Bluetooth Profile",
+                              "value": "Bluetooth® 5.1 range of 100ft / 30m with AAC, aptX™ Adaptive up to 24-bit / 48kHz, and SBC"
+                            },
+                            {
+                              "label": "Wired Digital",
+                              "value": "Hi-res audio up to 24-bit / 96kHz with the provided USB-C to USB-C cable on supported devices"
+                            },
+                            {
+                              "label": "Analog Connection",
+                              "value": "USB-C to 3.5mm cable"
+                            },
+                            {
+                              "label": "Antenna",
+                              "value": "Internal antenna"
+                            }
+                          ]
+                        }
+                      ],
+                      "boxItems": [
+                        {
+                          "label": "Wireless Headphones",
+                          "media": {
+                            "url": "https://www.masterdynamic.com/cdn/shop/files/MW75TUMI_WhatsIntheBox_300x300-1.png?v=1736453489&width=300",
+                            "alt": "MW75 TUMI Wireless Headphones",
+                            "fallbackUrl": "/assets/item-fallback.svg"
+                          }
+                        },
+                        {
+                          "label": "USB-C to USB-C Charging Cable",
+                          "media": {
+                            "url": "https://www.masterdynamic.com/cdn/shop/files/MH40W_L-Uniform_In-The-Box-USC-CtoUSB-C.png?v=1729024091&width=1667",
+                            "alt": "USB-C to USB-C Charging Cable",
+                            "fallbackUrl": "/assets/item-fallback.svg"
+                          }
+                        },
+                        {
+                          "label": "USB-C to 3.5mm Audio Cable",
+                          "media": {
+                            "url": "https://www.masterdynamic.com/cdn/shop/files/MH40W_L-Uniform_In-The-Box-3.5mmtoUSB-C.png?v=1729024091&width=1667",
+                            "alt": "USB-C to 3.5mm Audio Cable",
+                            "fallbackUrl": "/assets/item-fallback.svg"
+                          }
+                        },
+                        {
+                          "label": "USB-C to USB-A Adapter",
+                          "media": {
+                            "url": "https://www.masterdynamic.com/cdn/shop/files/MW75_TUMI_WhatsIntheBox-USB-CUSB-AAdapter_300x300-V1.png?v=1753813779&width=400",
+                            "alt": "USB-C to USB-A Adapter",
+                            "fallbackUrl": "/assets/item-fallback.svg"
+                          }
+                        },
+                        {
+                          "label": "3.5mm to 1/4\" Adapter",
+                          "media": {
+                            "url": "https://www.masterdynamic.com/cdn/shop/files/MW75_Lamborghini-In_tne_box_05_a0d6c39a-7ebb-4024-8961-a1f2386ea484.png?v=1693329912&width=331",
+                            "alt": "3.5mm to one-quarter inch Adapter",
+                            "fallbackUrl": "/assets/item-fallback.svg"
+                          }
+                        },
+                        {
+                          "label": "Flight Adapter",
+                          "media": {
+                            "url": "https://www.masterdynamic.com/cdn/shop/files/MH40W_L-Uniform_In-The-Box-Adapter.png?v=1729024091&width=1667",
+                            "alt": "Flight Adapter",
+                            "fallbackUrl": "/assets/item-fallback.svg"
+                          }
+                        },
+                        {
+                          "label": "Hard Shell Travel Case",
+                          "media": {
+                            "url": "https://www.masterdynamic.com/cdn/shop/files/MW75_TUMI_WhatsIntheBox-HardCase_300x300-1.png?v=1753813779&width=300",
+                            "alt": "Hard Shell Travel Case",
+                            "fallbackUrl": "/assets/item-fallback.svg"
+                          }
+                        }
+                      ],
+                      "support": {
+                        "eyebrow": "PRODUCT SUPPORT",
+                        "title": "Need support? We're here to assist you every step of the way.",
+                        "text": "Access product support and frequently asked questions in our Support Center.",
+                        "media": {
+                          "url": "https://www.masterdynamic.com/cdn/shop/files/MD_Support_Homepage_Desktop-20240711.jpg?v=1720732174&width=1600",
+                          "alt": "Master & Dynamic product support",
+                          "fallbackUrl": "/assets/support-fallback.svg"
+                        },
+                        "link": {
+                          "label": "Support Center",
+                          "url": "https://support.masterdynamic.com/"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID or malformed URL encoding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "invalidId": {
+                    "value": {
+                      "error": {
+                        "code": "INVALID_PRODUCT_ID",
+                        "message": "ID produk harus integer positif yang valid."
+                      }
+                    }
+                  },
+                  "invalidRequest": {
+                    "value": {
+                      "error": {
+                        "code": "INVALID_REQUEST",
+                        "message": "Request tidak valid."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Origin outside the loopback development allowlist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "ORIGIN_NOT_ALLOWED",
+                    "message": "Origin tidak diizinkan."
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Valid ID has no product record.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "PRODUCT_NOT_FOUND",
+                    "message": "Produk tidak ditemukan."
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Unsupported method for this resource.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "METHOD_NOT_ALLOWED",
+                    "message": "Method tidak diizinkan."
+                  }
+                }
+              }
+            },
+            "headers": {
+              "Allow": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "GET, HEAD, OPTIONS"
+              }
+            }
+          },
+          "500": {
+            "description": "Invalid database product data or internal failure.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "invalidData": {
+                    "value": {
+                      "error": {
+                        "code": "INVALID_PRODUCT_DATA",
+                        "message": "Data produk tidak valid."
+                      }
+                    }
+                  },
+                  "internal": {
+                    "value": {
+                      "error": {
+                        "code": "INTERNAL_ERROR",
+                        "message": "Terjadi kesalahan internal."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Connection/authentication/database failure or timeout; no private details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": {
+                    "code": "DATABASE_UNAVAILABLE",
+                    "message": "Database sementara tidak tersedia."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "object",
+            "required": [
+              "code",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "message": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              }
+            }
+          }
+        }
+      },
+      "HealthSuccess": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "type": "object",
+            "required": [
+              "status",
+              "application",
+              "database"
+            ],
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "ok"
+                ]
+              },
+              "application": {
+                "type": "string",
+                "enum": [
+                  "ready"
+                ]
+              },
+              "database": {
+                "type": "string",
+                "enum": [
+                  "ready"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "HealthUnavailable": {
+        "type": "object",
+        "required": [
+          "data",
+          "error"
+        ],
+        "properties": {
+          "data": {
+            "type": "object",
+            "required": [
+              "status",
+              "application",
+              "database"
+            ],
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "degraded"
+                ]
+              },
+              "application": {
+                "type": "string",
+                "enum": [
+                  "ready"
+                ]
+              },
+              "database": {
+                "type": "string",
+                "enum": [
+                  "unavailable"
+                ]
+              }
+            }
+          },
+          "error": {
+            "type": "object",
+            "required": [
+              "code",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "enum": [
+                  "DATABASE_UNAVAILABLE"
+                ]
+              },
+              "message": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              }
+            }
+          }
+        }
+      },
+      "QuantityPolicy": {
+        "type": "object",
+        "required": [
+          "min",
+          "maxPerOrder"
+        ],
+        "properties": {
+          "min": {
+            "type": "integer",
+            "enum": [
+              1
+            ]
+          },
+          "maxPerOrder": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 2147483647,
+            "nullable": true,
+            "description": "null means no known business limit; not unlimited inventory."
+          }
+        }
+      },
+      "Media": {
+        "type": "object",
+        "required": [
+          "url",
+          "alt",
+          "fallbackUrl"
+        ],
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "Server permits HTTPS reference hosts without credentials/port or local /assets/<name>.svg.",
+            "anyOf": [
+              {
+                "pattern": "^/assets/[a-zA-Z0-9_-]+\\.svg$"
+              },
+              {
+                "format": "uri",
+                "pattern": "^https://(www\\.masterdynamic\\.com|support\\.masterdynamic\\.com)/"
+              }
+            ]
+          },
+          "alt": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "fallbackUrl": {
+            "type": "string",
+            "description": "API media fallback or null; never a product fallback after API failure.",
+            "anyOf": [
+              {
+                "pattern": "^/assets/[a-zA-Z0-9_-]+\\.svg$"
+              },
+              {
+                "format": "uri",
+                "pattern": "^https://(www\\.masterdynamic\\.com|support\\.masterdynamic\\.com)/"
+              }
+            ],
+            "nullable": true
+          }
+        }
+      },
+      "Image": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Media"
+          },
+          {
+            "type": "object",
+            "required": [
+              "id",
+              "position"
+            ],
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 1,
+                "maximum": 2147483647
+              },
+              "position": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 0,
+                "maximum": 2147483647,
+                "description": "Nonnegative position, unique per variant; sorted ascending."
+              }
+            }
+          }
+        ]
+      },
+      "Link": {
+        "type": "object",
+        "required": [
+          "label",
+          "url"
+        ],
+        "properties": {
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "url": {
+            "type": "string",
+            "description": "Server permits HTTPS reference hosts without credentials/port or local /assets/<name>.svg.",
+            "anyOf": [
+              {
+                "pattern": "^/assets/[a-zA-Z0-9_-]+\\.svg$"
+              },
+              {
+                "format": "uri",
+                "pattern": "^https://(www\\.masterdynamic\\.com|support\\.masterdynamic\\.com)/"
+              }
+            ]
+          }
+        }
+      },
+      "Feature": {
+        "type": "object",
+        "required": [
+          "title",
+          "text",
+          "iconKey"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "iconKey": {
+            "type": "string",
+            "enum": [
+              "anc",
+              "materials",
+              "drivers",
+              "battery",
+              "bluetooth",
+              "microphones"
+            ]
+          }
+        }
+      },
+      "Benefit": {
+        "type": "object",
+        "required": [
+          "title",
+          "text"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          }
+        }
+      },
+      "Protection": {
+        "type": "object",
+        "required": [
+          "title",
+          "note"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "note": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          }
+        }
+      },
+      "Story": {
+        "type": "object",
+        "required": [
+          "eyebrow",
+          "title",
+          "paragraphs",
+          "media",
+          "links"
+        ],
+        "properties": {
+          "eyebrow": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "paragraphs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "minItems": 1
+          },
+          "media": {
+            "$ref": "#/components/schemas/Media"
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Link"
+            }
+          }
+        }
+      },
+      "SpecRow": {
+        "type": "object",
+        "required": [
+          "label",
+          "value"
+        ],
+        "properties": {
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "value": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          }
+        }
+      },
+      "SpecGroup": {
+        "type": "object",
+        "required": [
+          "title",
+          "rows"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SpecRow"
+            },
+            "minItems": 1
+          }
+        }
+      },
+      "BoxItem": {
+        "type": "object",
+        "required": [
+          "label",
+          "media"
+        ],
+        "properties": {
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "media": {
+            "$ref": "#/components/schemas/Media"
+          }
+        }
+      },
+      "Support": {
+        "type": "object",
+        "required": [
+          "eyebrow",
+          "title",
+          "text",
+          "media",
+          "link"
+        ],
+        "properties": {
+          "eyebrow": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "media": {
+            "$ref": "#/components/schemas/Media"
+          },
+          "link": {
+            "$ref": "#/components/schemas/Link"
+          }
+        }
+      },
+      "EditorialContent": {
+        "type": "object",
+        "required": [
+          "eyebrow",
+          "features",
+          "benefits",
+          "protection",
+          "stories",
+          "specGroups",
+          "boxItems",
+          "support"
+        ],
+        "properties": {
+          "eyebrow": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "features": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Feature"
+            },
+            "minItems": 6,
+            "maxItems": 6
+          },
+          "benefits": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Benefit"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "protection": {
+            "$ref": "#/components/schemas/Protection"
+          },
+          "stories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Story"
+            },
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "specGroups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SpecGroup"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "boxItems": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BoxItem"
+            },
+            "minItems": 7,
+            "maxItems": 7
+          },
+          "support": {
+            "$ref": "#/components/schemas/Support"
+          }
+        }
+      },
+      "Variant": {
+        "type": "object",
+        "required": [
+          "id",
+          "colorCode",
+          "label",
+          "referenceVariantId",
+          "availability",
+          "stockQuantity",
+          "isDefault",
+          "position",
+          "purchasable",
+          "images"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "colorCode": {
+            "type": "string",
+            "enum": [
+              "black",
+              "silver"
+            ]
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "referenceVariantId": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "nullable": true,
+            "description": "Source reference ID if known; not internal variant ID."
+          },
+          "availability": {
+            "type": "string",
+            "enum": [
+              "available",
+              "unavailable",
+              "unknown"
+            ],
+            "description": "Demonstration configuration, not real-time commercial stock."
+          },
+          "stockQuantity": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 2147483647,
+            "nullable": true,
+            "description": "null means unknown; zero cannot be combined with available."
+          },
+          "isDefault": {
+            "type": "boolean",
+            "description": "Exactly one default variant; defaultVariantId references its ID."
+          },
+          "position": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 2147483647
+          },
+          "purchasable": {
+            "type": "boolean",
+            "description": "Derived: available and stock null or positive; no inventory guarantee."
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Image"
+            },
+            "minItems": 4,
+            "maxItems": 4
+          }
+        }
+      },
+      "Product": {
+        "type": "object",
+        "required": [
+          "id",
+          "slug",
+          "name",
+          "subtitle",
+          "description",
+          "priceMinor",
+          "currency",
+          "defaultVariantId",
+          "quantityPolicy",
+          "variants",
+          "content"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "slug": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "subtitle": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "priceMinor": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 2147483647,
+            "example": 75000,
+            "description": "Integer USD cents; 75000 displays USD 750.00."
+          },
+          "currency": {
+            "type": "string",
+            "enum": [
+              "USD"
+            ]
+          },
+          "defaultVariantId": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "quantityPolicy": {
+            "$ref": "#/components/schemas/QuantityPolicy"
+          },
+          "variants": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Variant"
+            },
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "content": {
+            "$ref": "#/components/schemas/EditorialContent"
+          }
+        }
+      },
+      "ProductResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Product"
+          }
+        }
+      }
+    }
+  }
+}
